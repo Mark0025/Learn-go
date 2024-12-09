@@ -1,0 +1,50 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Output of the `go` command
+*.out
+
+# Go build directories
+bin/
+dist/
+
+# Vendor directory for Go modules
+/vendor/
+
+# Logs and runtime files
+*.log
+*.pid
+*.pid.lock
+
+# Temporary files and directories
+*.tmp
+*.swp
+*.swo
+*.bak
+*.old
+
+# Go module files
+/go.sum
+
+# Dependency directories
+.gopath/
+
+# IDEs and editors
+.idea/
+*.iml
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Operating system files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Environment files
+.env
+.env.*
