@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App - Geico Edition</title>
+    <link rel="stylesheet" href="/html/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Geico To-Do App</h1>
+        <p>Give us a call—only 15 minutes could save you 15% or more on car insurance. Don't be like the caveman! Call us at: <strong>405-963-2596</strong></p>
+    </header>
+    <div class="geico-image-container">
+        <img src="/images/geico.jpeg" alt="Geico Logo" class="geico-image">
+    </div>
+    <div class="todo-section">
+        <div class="content">
+            <h2>Your To-Do List</h2>
+            <ul id="todo-list"></ul>
+            <h2>Add New Todo</h2>
+            <form id="add-todo-form">
+                <input type="text" id="todo-title" placeholder="Enter todo title" required>
+                <button type="submit" class="add-button">Add Todo</button>
+            </form>
+        </div>
+    </div>
+    <div class="header-images">
+        <div class="caveman-image-container">
+            <p>DONT BE LIKE THE CAVEMAN!</p>
+            <img src="/images/geico-caveman.png" alt="Geico Caveman" class="caveman-image">
+        </div>
+    </div>
+    <script>
+        const apiUrl = '/todos';
+
+        // Fetch and display todos
+        function fetchTodos() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById('todo-list');
+                    list.innerHTML = '';
+                    data.forEach(todo => {
+                        const li = document.createElement('li');
+                        li.textContent = `${todo.title} - ${todo.status}`;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.className = 'delete-button'; // Add class for styling
+                        deleteButton.onclick = () => deleteTodo(todo.id);
+                        li.appendChild(deleteButton);
+                        list.appendChild(li);
+                    });
+                });
+        }
+
+        // Add a new todo
+        document.getElementById('add-todo-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('todo-title').value;
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title }),
+            }).then(() => {
+                document.getElementById('todo-title').value = '';
+                fetchTodos();
+            });
+        });
+
+        // Delete a todo
+        function deleteTodo(id) {
+            fetch(`${apiUrl}/${id}`, {
+                method: 'DELETE',
+            }).then(() => fetchTodos());
+        }
+
+        // Initial load
+        fetchTodos();
+    </script>
+</body>
+</html>
