@@ -1,4 +1,4 @@
-module example.com/todoapp
+ module example.com/todoapp
 
 go 1.23.1
 

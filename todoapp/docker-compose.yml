@@ -1,0 +1,34 @@
+version: '3.8'
+
+networks:
+  default:
+    external: true
+    name: AUTOMATION_NETWORK
+
+services:
+  todoapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: todoapp
+    networks:
+      - default
+    ports:
+      - "8080:8080" # Local access to the app (optional)
+
+  nginx_proxy_manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: always
+    ports:
+      - "80:80"     # Public HTTP
+      - "443:443"   # Public HTTPS
+      - "81:81"     # NPM Admin UI
+    environment:
+      DB_SQLITE_FILE: "/data/database.sqlite"
+    volumes:
+      - ./nginx/data:/data
+      - ./nginx/letsencrypt:/etc/letsencrypt
+    networks:
+      - default
+
