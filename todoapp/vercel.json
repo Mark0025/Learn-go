@@ -32,7 +32,7 @@
     },
     {
       "src": "^/todos/[0-9]+$",
-      "methods": ["DELETE"],
+      "methods": ["PUT", "DELETE"],
       "dest": "/src/api/index.go"
     },
     {

@@ -85,6 +85,41 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
 		})
 
+		router.PUT("/todos/:id", func(c *gin.Context) {
+			idStr := c.Param("id")
+			id, err := strconv.Atoi(idStr)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+				return
+			}
+
+			var updatedTodo Todo
+			if err := c.ShouldBindJSON(&updatedTodo); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+
+			// Check in active todos
+			for i, todo := range todos {
+				if todo.ID == id {
+					todos[i].Title = updatedTodo.Title
+					c.JSON(http.StatusOK, todos[i])
+					return
+				}
+			}
+
+			// Check in completed todos
+			for i, todo := range completedTodos {
+				if todo.ID == id {
+					completedTodos[i].Title = updatedTodo.Title
+					c.JSON(http.StatusOK, completedTodos[i])
+					return
+				}
+			}
+
+			c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
+		})
+
 		router.DELETE("/todos/:id", func(c *gin.Context) {
 			idStr := c.Param("id")
 			id, err := strconv.Atoi(idStr)

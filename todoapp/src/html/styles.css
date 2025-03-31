@@ -138,6 +138,31 @@ button:hover {
     font-size: 14px;
 }
 
+.actions button.complete-btn {
+    background-color: #28a745;
+}
+
+.actions button.complete-btn:hover {
+    background-color: #218838;
+}
+
+.actions button.delete-btn {
+    background-color: #dc3545;
+}
+
+.actions button.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.actions button.edit-btn {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.actions button.edit-btn:hover {
+    background-color: #e0a800;
+}
+
 .history-list {
     list-style: none;
     padding: 0;

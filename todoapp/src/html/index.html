@@ -86,8 +86,9 @@
                 li.innerHTML = `
                     <span>${todo.title}</span>
                     <div class="actions">
-                        <button onclick="completeTodo(${todo.id})">Complete</button>
-                        <button onclick="deleteTodo(${todo.id})">Delete</button>
+                        <button onclick="editTodo(${todo.id})" class="edit-btn">Edit</button>
+                        <button onclick="completeTodo(${todo.id})" class="complete-btn">Complete</button>
+                        <button onclick="deleteTodo(${todo.id})" class="delete-btn">Delete</button>
                     </div>
                 `;
                 todoList.appendChild(li);
@@ -102,7 +103,8 @@
                 li.innerHTML = `
                     <span class="completed">${todo.title}</span>
                     <div class="actions">
-                        <button onclick="deleteTodo(${todo.id})">Delete</button>
+                        <button onclick="editTodo(${todo.id})" class="edit-btn">Edit</button>
+                        <button onclick="deleteTodo(${todo.id})" class="delete-btn">Delete</button>
                     </div>
                 `;
                 completedList.appendChild(li);
@@ -190,6 +192,33 @@
                 }
             } catch (error) {
                 console.error('Error deleting todo:', error);
+            }
+        }
+
+        async function editTodo(id) {
+            const todo = todos.find(t => t.id === id) || completedTodos.find(t => t.id === id);
+            if (!todo) return;
+
+            const newTitle = prompt('Edit todo:', todo.title);
+            if (newTitle === null || newTitle.trim() === '') return;
+
+            try {
+                const response = await fetch(`/todos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title: newTitle.trim() })
+                });
+                
+                if (response.ok) {
+                    todo.title = newTitle.trim();
+                    addToHistory('Edited', todo.title);
+                    displayTodos();
+                    displayCompletedTodos();
+                }
+            } catch (error) {
+                console.error('Error editing todo:', error);
             }
         }
 
