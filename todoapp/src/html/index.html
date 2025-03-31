@@ -14,15 +14,29 @@
     <div class="geico-image-container">
         <img src="/images/geico.jpeg" alt="Geico Logo" class="geico-image">
     </div>
-    <div class="todo-section">
-        <div class="content">
-            <h2>Your To-Do List</h2>
-            <ul id="todo-list"></ul>
-            <h2>Add New Todo</h2>
-            <form id="add-todo-form">
-                <input type="text" id="todo-title" placeholder="Enter todo title" required>
-                <button type="submit" class="add-button">Add Todo</button>
-            </form>
+    <div class="container">
+        <div class="todo-section">
+            <h2>Active Todos</h2>
+            <div class="add-todo">
+                <input type="text" id="newTodo" placeholder="Add a new todo...">
+                <button onclick="addTodo()">Add</button>
+            </div>
+            <ul id="todoList" class="todo-list"></ul>
+        </div>
+
+        <div class="todo-section">
+            <h2>Completed Todos</h2>
+            <ul id="completedList" class="todo-list completed"></ul>
+        </div>
+
+        <div class="todo-section">
+            <h2>Deleted Todos</h2>
+            <ul id="deletedList" class="todo-list deleted"></ul>
+        </div>
+
+        <div class="todo-section">
+            <h2>Todo History</h2>
+            <ul id="historyList" class="history-list"></ul>
         </div>
     </div>
     <div class="header-images">
@@ -32,53 +46,166 @@
         </div>
     </div>
     <script>
-        const apiUrl = '/todos';
+        let todos = [];
+        let completedTodos = [];
+        let deletedTodos = [];
+        let history = [];
 
-        // Fetch and display todos
-        function fetchTodos() {
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const list = document.getElementById('todo-list');
-                    list.innerHTML = '';
-                    data.forEach(todo => {
-                        const li = document.createElement('li');
-                        li.textContent = `${todo.title} - ${todo.status}`;
-                        const deleteButton = document.createElement('button');
-                        deleteButton.textContent = 'Delete';
-                        deleteButton.className = 'delete-button';
-                        deleteButton.onclick = () => deleteTodo(todo.id);
-                        li.appendChild(deleteButton);
-                        list.appendChild(li);
-                    });
-                });
+        // Load todos on page load
+        window.onload = function() {
+            loadTodos();
+            loadCompletedTodos();
+            loadHistory();
+        };
+
+        async function loadTodos() {
+            try {
+                const response = await fetch('/todos');
+                todos = await response.json();
+                displayTodos();
+            } catch (error) {
+                console.error('Error loading todos:', error);
+            }
         }
 
-        // Add a new todo
-        document.getElementById('add-todo-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const title = document.getElementById('todo-title').value;
-            fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ title }),
-            }).then(() => {
-                document.getElementById('todo-title').value = '';
-                fetchTodos();
+        async function loadCompletedTodos() {
+            try {
+                const response = await fetch('/todos/completed');
+                completedTodos = await response.json();
+                displayCompletedTodos();
+            } catch (error) {
+                console.error('Error loading completed todos:', error);
+            }
+        }
+
+        function displayTodos() {
+            const todoList = document.getElementById('todoList');
+            todoList.innerHTML = '';
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${todo.title}</span>
+                    <div class="actions">
+                        <button onclick="completeTodo(${todo.id})">Complete</button>
+                        <button onclick="deleteTodo(${todo.id})">Delete</button>
+                    </div>
+                `;
+                todoList.appendChild(li);
             });
-        });
-
-        // Delete a todo
-        function deleteTodo(id) {
-            fetch(`${apiUrl}/${id}`, {
-                method: 'DELETE',
-            }).then(() => fetchTodos());
         }
 
-        // Initial load
-        fetchTodos();
+        function displayCompletedTodos() {
+            const completedList = document.getElementById('completedList');
+            completedList.innerHTML = '';
+            completedTodos.forEach(todo => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="completed">${todo.title}</span>
+                    <div class="actions">
+                        <button onclick="deleteTodo(${todo.id})">Delete</button>
+                    </div>
+                `;
+                completedList.appendChild(li);
+            });
+        }
+
+        function displayDeletedTodos() {
+            const deletedList = document.getElementById('deletedList');
+            deletedList.innerHTML = '';
+            deletedTodos.forEach(todo => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="deleted">${todo.title}</span>
+                `;
+                deletedList.appendChild(li);
+            });
+        }
+
+        function displayHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            history.forEach(entry => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="history-entry">${entry.action}: ${entry.title}</span>
+                    <span class="history-time">${entry.timestamp}</span>
+                `;
+                historyList.appendChild(li);
+            });
+        }
+
+        async function addTodo() {
+            const input = document.getElementById('newTodo');
+            const title = input.value.trim();
+            if (!title) return;
+
+            try {
+                const response = await fetch('/todos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title })
+                });
+                const newTodo = await response.json();
+                todos.push(newTodo);
+                addToHistory('Created', title);
+                displayTodos();
+                input.value = '';
+            } catch (error) {
+                console.error('Error adding todo:', error);
+            }
+        }
+
+        async function completeTodo(id) {
+            try {
+                const response = await fetch(`/todos/${id}/complete`, {
+                    method: 'POST'
+                });
+                const completedTodo = await response.json();
+                todos = todos.filter(todo => todo.id !== id);
+                completedTodos.push(completedTodo);
+                addToHistory('Completed', completedTodo.title);
+                displayTodos();
+                displayCompletedTodos();
+            } catch (error) {
+                console.error('Error completing todo:', error);
+            }
+        }
+
+        async function deleteTodo(id) {
+            try {
+                const response = await fetch(`/todos/${id}`, {
+                    method: 'DELETE'
+                });
+                const todo = todos.find(t => t.id === id) || completedTodos.find(t => t.id === id);
+                if (todo) {
+                    todos = todos.filter(t => t.id !== id);
+                    completedTodos = completedTodos.filter(t => t.id !== id);
+                    deletedTodos.push(todo);
+                    addToHistory('Deleted', todo.title);
+                    displayTodos();
+                    displayCompletedTodos();
+                    displayDeletedTodos();
+                }
+            } catch (error) {
+                console.error('Error deleting todo:', error);
+            }
+        }
+
+        function addToHistory(action, title) {
+            const timestamp = new Date().toLocaleString();
+            history.unshift({ action, title, timestamp });
+            if (history.length > 50) history.pop(); // Keep last 50 entries
+            displayHistory();
+        }
+
+        // Handle Enter key in input
+        document.getElementById('newTodo').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
     </script>
 </body>
 </html>
