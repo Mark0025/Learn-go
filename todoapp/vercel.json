@@ -4,12 +4,36 @@
     {
       "src": "api/**/*.go",
       "use": "@vercel/go"
+    },
+    {
+      "src": "src/html/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "src/images/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
+      "src": "/api/todos",
+      "dest": "/api/index.go"
+    },
+    {
+      "src": "/api/todos/(.*)",
+      "dest": "/api/index.go"
+    },
+    {
+      "src": "/images/(.*)",
+      "dest": "/src/images/$1"
+    },
+    {
+      "src": "/html/(.*)",
+      "dest": "/src/html/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/api/$1"
+      "dest": "/api/index.go"
     }
   ]
 } 
