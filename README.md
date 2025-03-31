@@ -38,7 +38,7 @@ Welcome to the **Learn Go** repository! This project documents my journey to mas
 
 This repository demonstrates my commitment to:  
 1. Rapidly learning and applying Go programming to meet enterprise-level requirements.  
-2. Delivering a **Minimum Viable Product (MVP)** showcasing Go's capabilities in a practical, insurance-focused context.  
+2. Delivering a **Minimum Viable Product (MVP)** showcasing Go's capabilities in a practical, insurance-focused context.  (TODO APP)
 3. Establishing efficient DevOps pipelines to ensure scalable and reliable deployments.  
 4. Developing skills to contribute meaningfully as part of a high-performing engineering team.  
 
