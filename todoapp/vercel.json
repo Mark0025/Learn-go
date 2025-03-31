@@ -16,8 +16,14 @@
   ],
   "routes": [
     {
-      "src": "/",
-      "dest": "/src/html/index.html"
+      "src": "^/todos$",
+      "methods": ["GET", "POST"],
+      "dest": "/src/api/index.go"
+    },
+    {
+      "src": "^/todos/.*$",
+      "methods": ["DELETE"],
+      "dest": "/src/api/index.go"
     },
     {
       "src": "/images/(.*)",
@@ -28,12 +34,8 @@
       "dest": "/src/html/$1"
     },
     {
-      "src": "/todos",
-      "dest": "/src/api/index.go"
-    },
-    {
-      "src": "/todos/(.*)",
-      "dest": "/src/api/index.go"
+      "src": "^/$",
+      "dest": "/src/html/index.html"
     },
     {
       "handle": "filesystem"

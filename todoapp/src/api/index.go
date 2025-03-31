@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,41 +39,38 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		c.Next()
 	})
 
-	// Serve static files
-	router.Static("/images", "./src/images")
-	router.Static("/html", "./src/html")
-	router.StaticFile("/", "./src/html/index.html")
+	// API routes - only handle /todos endpoints
+	if strings.HasPrefix(r.URL.Path, "/todos") {
+		router.GET("/todos", func(c *gin.Context) {
+			c.JSON(http.StatusOK, todos)
+		})
 
-	// CRUD API
-	router.GET("/todos", func(c *gin.Context) {
-		c.JSON(http.StatusOK, todos)
-	})
-
-	router.POST("/todos", func(c *gin.Context) {
-		var newTodo Todo
-		if err := c.ShouldBindJSON(&newTodo); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		newTodo.ID = nextID
-		nextID++
-		newTodo.Status = "pending"
-		todos = append(todos, newTodo)
-		c.JSON(http.StatusCreated, newTodo)
-	})
-
-	router.DELETE("/todos/:id", func(c *gin.Context) {
-		id := c.Param("id")
-		for i, todo := range todos {
-			if string(todo.ID) == id {
-				todos = append(todos[:i], todos[i+1:]...)
-				c.JSON(http.StatusOK, gin.H{"message": "Todo deleted"})
+		router.POST("/todos", func(c *gin.Context) {
+			var newTodo Todo
+			if err := c.ShouldBindJSON(&newTodo); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
-		}
-		c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
-	})
 
-	router.ServeHTTP(w, r)
+			newTodo.ID = nextID
+			nextID++
+			newTodo.Status = "pending"
+			todos = append(todos, newTodo)
+			c.JSON(http.StatusCreated, newTodo)
+		})
+
+		router.DELETE("/todos/:id", func(c *gin.Context) {
+			id := c.Param("id")
+			for i, todo := range todos {
+				if string(todo.ID) == id {
+					todos = append(todos[:i], todos[i+1:]...)
+					c.JSON(http.StatusOK, gin.H{"message": "Todo deleted"})
+					return
+				}
+			}
+			c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
+		})
+
+		router.ServeHTTP(w, r)
+	}
 }
