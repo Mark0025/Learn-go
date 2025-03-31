@@ -16,27 +16,27 @@
   ],
   "routes": [
     {
-      "src": "^/images/(.*)$",
+      "src": "/",
+      "dest": "/src/html/index.html"
+    },
+    {
+      "src": "/images/(.*)",
       "dest": "/src/images/$1"
     },
     {
-      "src": "^/html/(.*)$",
+      "src": "/html/(.*)",
       "dest": "/src/html/$1"
     },
     {
-      "src": "^/todos/?$",
+      "src": "/todos",
       "dest": "/src/api/index.go"
     },
     {
-      "src": "^/todos/(.*)$",
+      "src": "/todos/(.*)",
       "dest": "/src/api/index.go"
     },
     {
       "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/src/api/index.go"
     }
   ]
 } 
