@@ -21,6 +21,16 @@
       "dest": "/src/api/index.go"
     },
     {
+      "src": "^/todos/completed$",
+      "methods": ["GET"],
+      "dest": "/src/api/index.go"
+    },
+    {
+      "src": "^/todos/[0-9]+/complete$",
+      "methods": ["POST"],
+      "dest": "/src/api/index.go"
+    },
+    {
       "src": "^/todos/[0-9]+$",
       "methods": ["DELETE"],
       "dest": "/src/api/index.go"

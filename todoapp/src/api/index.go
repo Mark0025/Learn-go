@@ -19,6 +19,7 @@ var todos = []Todo{
 	{ID: 2, Title: "Hire Mark", Status: "pending"},
 	{ID: 3, Title: "Check out AIREINVESTOR.COM", Status: "pending"},
 }
+var completedTodos = []Todo{}
 var nextID = 4
 
 func Handler(w http.ResponseWriter, r *http.Request) {
@@ -46,6 +47,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			c.JSON(http.StatusOK, todos)
 		})
 
+		router.GET("/todos/completed", func(c *gin.Context) {
+			c.JSON(http.StatusOK, completedTodos)
+		})
+
 		router.POST("/todos", func(c *gin.Context) {
 			var newTodo Todo
 			if err := c.ShouldBindJSON(&newTodo); err != nil {
@@ -58,6 +63,26 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			newTodo.Status = "pending"
 			todos = append(todos, newTodo)
 			c.JSON(http.StatusCreated, newTodo)
+		})
+
+		router.POST("/todos/:id/complete", func(c *gin.Context) {
+			idStr := c.Param("id")
+			id, err := strconv.Atoi(idStr)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+				return
+			}
+
+			for i, todo := range todos {
+				if todo.ID == id {
+					todo.Status = "completed"
+					completedTodos = append(completedTodos, todo)
+					todos = append(todos[:i], todos[i+1:]...)
+					c.JSON(http.StatusOK, todo)
+					return
+				}
+			}
+			c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
 		})
 
 		router.DELETE("/todos/:id", func(c *gin.Context) {
