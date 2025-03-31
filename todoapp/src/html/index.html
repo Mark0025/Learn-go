@@ -46,7 +46,7 @@
                         li.textContent = `${todo.title} - ${todo.status}`;
                         const deleteButton = document.createElement('button');
                         deleteButton.textContent = 'Delete';
-                        deleteButton.className = 'delete-button'; // Add class for styling
+                        deleteButton.className = 'delete-button';
                         deleteButton.onclick = () => deleteTodo(todo.id);
                         li.appendChild(deleteButton);
                         list.appendChild(li);
