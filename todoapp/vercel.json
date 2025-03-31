@@ -21,7 +21,7 @@
       "dest": "/src/api/index.go"
     },
     {
-      "src": "^/todos/.*$",
+      "src": "^/todos/[0-9]+$",
       "methods": ["DELETE"],
       "dest": "/src/api/index.go"
     },

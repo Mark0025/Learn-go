@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -60,9 +61,15 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		router.DELETE("/todos/:id", func(c *gin.Context) {
-			id := c.Param("id")
+			idStr := c.Param("id")
+			id, err := strconv.Atoi(idStr)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+				return
+			}
+
 			for i, todo := range todos {
-				if string(todo.ID) == id {
+				if todo.ID == id {
 					todos = append(todos[:i], todos[i+1:]...)
 					c.JSON(http.StatusOK, gin.H{"message": "Todo deleted"})
 					return
