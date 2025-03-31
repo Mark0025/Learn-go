@@ -1,5 +1,5 @@
 # Stage 1: Build the Go application
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
@@ -9,9 +9,10 @@ RUN go mod download
 
 # Copy the entire application source code
 COPY src/ ./
+COPY api/ ./api/
 
 # Build with optimizations
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o todoapp main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o app main.go
 
 # Stage 2: Create a minimal runtime container
 FROM alpine:latest
@@ -19,9 +20,9 @@ FROM alpine:latest
 WORKDIR /app
 
 # Copy the built binary and static assets from the builder stage
-COPY --from=builder /app/todoapp .
-COPY src/html ./html
-COPY src/images ./images
+COPY --from=builder /app/app .
+COPY src/html /app/html
+COPY src/images /app/images
 
 # Add non-root user for security
 RUN adduser -D -g '' appuser
@@ -31,5 +32,5 @@ USER appuser
 EXPOSE 8080
 
 # Command to run the application
-CMD ["./todoapp"]
+CMD ["./app"]
 

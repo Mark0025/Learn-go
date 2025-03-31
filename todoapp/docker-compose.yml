@@ -1,20 +1,24 @@
 version: '3.8'
 
-networks:
-  default:
-    external: true
-    name: AUTOMATION_NETWORK
-
 services:
   todoapp:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: todoapp
-    networks:
-      - default
     ports:
-      - "8080:8080" # Local access to the app (optional)
+      - "8080:8080"
+    volumes:
+      - ./src:/app/src
+      - ./api:/app/api
+    environment:
+      - GIN_MODE=debug
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
   nginx_proxy_manager:
     image: jc21/nginx-proxy-manager:latest

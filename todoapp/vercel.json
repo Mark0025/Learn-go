@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.go",
+      "src": "src/api/*.go",
       "use": "@vercel/go"
     },
     {
@@ -20,23 +20,23 @@
       "dest": "/src/images/$1"
     },
     {
-      "src": "^/static/(.*)$",
+      "src": "^/html/(.*)$",
       "dest": "/src/html/$1"
     },
     {
-      "src": "^/api/todos/?$",
-      "dest": "/api/index.go"
+      "src": "^/todos/?$",
+      "dest": "/src/api/index.go"
     },
     {
-      "src": "^/api/todos/(.*)$",
-      "dest": "/api/index.go"
+      "src": "^/todos/(.*)$",
+      "dest": "/src/api/index.go"
     },
     {
       "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "/api/index.go"
+      "dest": "/src/api/index.go"
     }
   ]
 } 
