@@ -16,20 +16,23 @@
   ],
   "routes": [
     {
-      "src": "/api/todos",
-      "dest": "/api/index.go"
-    },
-    {
-      "src": "/api/todos/(.*)",
-      "dest": "/api/index.go"
-    },
-    {
-      "src": "/images/(.*)",
+      "src": "^/images/(.*)$",
       "dest": "/src/images/$1"
     },
     {
-      "src": "/html/(.*)",
+      "src": "^/static/(.*)$",
       "dest": "/src/html/$1"
+    },
+    {
+      "src": "^/api/todos/?$",
+      "dest": "/api/index.go"
+    },
+    {
+      "src": "^/api/todos/(.*)$",
+      "dest": "/api/index.go"
+    },
+    {
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",

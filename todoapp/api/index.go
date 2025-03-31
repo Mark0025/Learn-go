@@ -2,7 +2,7 @@ package handler
 
 import (
 	"net/http"
-	"path/filepath"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,6 +25,20 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Recovery())
+
+	// Enable CORS
+	router.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	})
 
 	// API routes
 	api := router.Group("/api")
@@ -60,14 +74,23 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	// Handle root path specially
+	// Handle root path
 	router.GET("/", func(c *gin.Context) {
-		c.File(filepath.Join("src", "html", "index.html"))
+		// Try to serve index.html from the filesystem first
+		if _, err := os.Stat("/src/html/index.html"); err == nil {
+			c.File("/src/html/index.html")
+			return
+		}
+		// Fallback to serving the API response
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Todo API is running",
+			"endpoints": []string{
+				"GET /api/todos",
+				"POST /api/todos",
+				"DELETE /api/todos/:id",
+			},
+		})
 	})
-
-	// Serve static files
-	router.Static("/images", filepath.Join("src", "images"))
-	router.Static("/html", filepath.Join("src", "html"))
 
 	router.ServeHTTP(w, r)
 }
