@@ -10,37 +10,6 @@ Here’s a refined version of the README, tailored specifically for Geico. It fo
 - **Status:** deployed at https://learn-go-gamma.vercel.app (inactive since 2025-03)
 - **Source:** agent research 2026-11-04
 
-_A Tailored Initiative for Geico's Engineering Excellence_
-
-Welcome to the **Learn Go** repository! This project documents my journey to mastering the Go programming language, designed to directly align with Geico's mission of building high-performance, low-maintenance, and zero-downtime platforms.
-
----
-
-
-
-
-
-
-
-
-
-
-
-
-
-![Geico Todo App](todoapp/Geico-Todo-App.png)
-
-
-
-
-
-
-
-
-
-
-
-
 ## 🏆 **Objective**
 
 This repository demonstrates my commitment to:  
